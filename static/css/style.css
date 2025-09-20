@@ -1,0 +1,196 @@
+/* 基本フォント */
+body {
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* タイマー */
+#timer {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+/* スコア強調 */
+.score-display {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #d9534f;
+}
+
+/* 注文群を横並び・折返し */
+.orders-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin: 0 auto;
+  max-width: 100%;
+  padding: 6px;
+
+  /* 高さ固定してグリッドを押し下げない */
+  min-height: 140px; /* 注文カードの高さに合わせる */
+
+  /* 左端を右にずらす */
+  padding-left: 80px; /* ここで開始位置を右に移動 */
+}
+/* 各注文カード */
+.order-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 横方向中央 */
+  justify-content: center; /* 縦方向中央 ← 追加 */
+  min-width: 140px;
+  max-width: 160px;
+  height: 120px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 中の材料行（横並び） */
+.order-items-row {
+  display: flex;
+  flex-direction: row; /* 横並びにする */
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* 各材料（縦に：絵文字上、ツール下） */
+.order-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 28px;
+}
+
+/* 絵文字とツールのサイズ調整 */
+.order-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.order-tool {
+  font-size: 1rem;
+  margin-top: 4px;
+  color: #444;
+  line-height: 1;
+  height: 1.2rem; /* ツールが無い場合の高さ確保 */
+}
+
+/* 残り時間 */
+.order-time {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* ゲーム盤（グリッド） */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(9, 60px);
+  grid-template-rows: repeat(5, 60px);
+  gap: 4px;
+  margin: 20px auto;
+  width: fit-content;
+  position: relative;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border: 1px solid #dee2e6;
+  background-color: #fff;
+  position: relative;
+}
+
+.player {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: gold;
+  position: absolute;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji {
+  position: absolute;
+  font-size: 32px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.checked::after {
+  content: "✔";
+  font-size: 20px;
+  color: green;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.cooked {
+  filter: brightness(0.6) sepia(1) hue-rotate(-20deg) saturate(4);
+}
+
+.burger-tooltip {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 2px 4px;
+  white-space: nowrap;
+  z-index: 70;
+}
+
+.col-md-3.d-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* 上寄せ */
+  margin-top: 60px; /* 40px → 60px に増やして下に下げる */
+  gap: 1rem;
+  padding: 0 0.5rem;
+}
+
+/* コントロールボタン（スタート、一時停止、再スタート）を中央寄せ */
+#controlBtns {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 横方向中央寄せ */
+  gap: 0.5rem;
+}
+
+/* コントロールボタン個別 */
+#controlBtns button {
+  width: 140px; /* ホームボタンと同じ幅 */
+  padding: 0.4rem 0; /* 高さは文字に合わせる */
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ホームへ戻るボタンを少し下に */
+a.btn-outline-secondary {
+  width: 140px;
+  padding: 0.4rem 0;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 10rem; /* 下に余白 */
+}
