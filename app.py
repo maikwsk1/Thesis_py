@@ -1,79 +1,71 @@
-from flask import Flask, render_template, request
-from flask_socketio import SocketIO
-import threading
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "secret!"
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode="eventlet")
 
-# カウントダウン管理
-running = False
-stop_event = None
 current_time = 0
+running = False
+scores = {}
 
-# クライアントごとのスコア
-scores = {}  # { sid: score }
+# ===== 定数 =====
+# （Flask版には特に無し。Expressでは BURGER_RECIPES がここに相当）
 
+# ===== ページルーティング =====
 @app.route("/")
-def home():
+def index():
     return render_template("index.html")
 
-@app.route("/countdown")
-def countdown_page():
-    return render_template("countdown.html")
+@app.route("/hamburger")
+def hamburger_page():
+    return render_template("hamburger.html")
 
-def countdown_task(ev):
+# ===== ゲーム制御 =====
+@socketio.on("start")
+def handle_start(data):
+    global running
+    if not running:
+        seconds = data.get("seconds", 120)
+        socketio.start_background_task(countdown_task, seconds)
+        emit("started", {"seconds": seconds})
+
+@socketio.on("stop")
+def handle_stop():
+    global running
+    running = False
+    emit("stopped", {"msg": "カウント停止"})
+
+@socketio.on("finish")
+def handle_finish():
     global running, current_time
-    while current_time > 0:
-        if ev.is_set():
-            running = False
-            return
+    running = False
+    current_time = 0
+    emit("finished", {"msg": "強制終了"})
+
+# ===== 状態取得・更新 =====
+@socketio.on("field_update")
+def handle_field_update(data):
+    socketio.emit("field_update", data, broadcast=True)
+
+@socketio.on("score_update")
+def handle_score_update(data):
+    sid = data.get("sid", "anon")
+    score = data.get("score", 0)
+    scores[sid] = score
+    socketio.emit("score_update", scores, broadcast=True)
+
+# ===== ユーティリティ =====
+def countdown_task(seconds):
+    global current_time, running
+    running = True
+    current_time = seconds
+    while running and current_time > 0:
         socketio.emit("update", {"time": current_time})
         socketio.sleep(1)
         current_time -= 1
     running = False
     socketio.emit("finished", {"msg": "カウント終了"})
 
-@socketio.on("start")
-def handle_start(data):
-    global running, stop_event, current_time
-    if not running:
-        stop_event = threading.Event()
-        sec = int(data.get("seconds", current_time or 10))
-        if current_time == 0:
-            current_time = sec
-        running = True
-        socketio.start_background_task(countdown_task, stop_event)
-
-@socketio.on("stop")
-def handle_stop():
-    global running, stop_event
-    if running and stop_event:
-        stop_event.set()
-    running = False
-    socketio.emit("update", {"time": current_time})
-
-@socketio.on("finish")
-def handle_finish():
-    global running, stop_event, current_time
-    if running and stop_event:
-        stop_event.set()
-    running = False
-    current_time = 0
-    socketio.emit("update", {"time": "--"})
-    socketio.emit("go_home")
-
-# フィールド同期
-@socketio.on("field_update")
-def handle_field_update(data):
-    socketio.emit("field_state", data, broadcast=True)
-
-# スコア更新
-@socketio.on("score_update")
-def handle_score_update(data):
-    sid = request.sid
-    scores[sid] = data.get("score", 0)
-    print(f"[Score] sid={sid} score={scores[sid]}")
-
+# ===== 実行 =====
 if __name__ == "__main__":
     socketio.run(app, debug=True)
