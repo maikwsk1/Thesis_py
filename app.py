@@ -1,15 +1,17 @@
+# ===== モジュール設定 =====
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode="eventlet")
 
+# ===== 変数定義 =====
 current_time = 0
 running = False
 scores = {}
 
 # ===== 定数 =====
-# （Flask版には特に無し。Expressでは BURGER_RECIPES がここに相当）
+# （Flask版ではサーバー内レシピ定義を持たず、クライアント側が管理）
 
 # ===== ページルーティング =====
 @app.route("/")
@@ -45,14 +47,14 @@ def handle_finish():
 # ===== 状態取得・更新 =====
 @socketio.on("field_update")
 def handle_field_update(data):
-    socketio.emit("field_update", data, broadcast=True)
+    socketio.emit("field_update", data)
 
 @socketio.on("score_update")
 def handle_score_update(data):
     sid = data.get("sid", "anon")
     score = data.get("score", 0)
     scores[sid] = score
-    socketio.emit("score_update", scores, broadcast=True)
+    socketio.emit("score_update", scores)
 
 # ===== ユーティリティ =====
 def countdown_task(seconds):
