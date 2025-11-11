@@ -1,0 +1,25 @@
+{
+  "name": "flask__app",
+  "version": "1.0.0",
+  "description": "Flask \u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maikwsk1/Thesis_py.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maikwsk1/Thesis_py/issues"
+  },
+  "homepage": "https://github.com/maikwsk1/Thesis_py#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0"
+  }
+}
